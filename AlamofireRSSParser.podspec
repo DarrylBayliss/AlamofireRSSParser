@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "AlamofireRSSParser"
-  s.version          = "2.1.0"
+  s.version          = "2.2.0"
   s.summary          = "An RSS parser response handler for Alamofire"
   s.description      = "An RSS parser plugin for Alamofire.  Adds a \"responseRSS()\" responseHandler to Alamofire."
   
@@ -18,7 +18,10 @@ Pod::Spec.new do |s|
   s.author           = { "Don Angelillo" => "dangelillo@gmail.com" }
   s.source           = { :git => "https://github.com/AdeptusAstartes/AlamofireRSSParser.git", :tag => s.version.to_s }
 
-  s.platform     = :ios, '8.0'
+  s.ios.deployment_target = '8.0'
+  s.osx.deployment_target = '10.10'
+  s.tvos.deployment_target = '9.0'
+  s.watchos.deployment_target = '2.0'
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'

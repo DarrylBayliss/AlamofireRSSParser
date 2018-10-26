@@ -1,19 +1,23 @@
 PODS:
-  - Alamofire (4.5.1)
-  - AlamofireRSSParser (2.1.0):
+  - Alamofire (4.7.3)
+  - AlamofireRSSParser (2.2.0):
     - Alamofire
 
 DEPENDENCIES:
   - AlamofireRSSParser (from `../`)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+
 EXTERNAL SOURCES:
   AlamofireRSSParser:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
-  AlamofireRSSParser: 3937110b1684b122917a92c5fb2919060cfb26c5
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  AlamofireRSSParser: 4aaa08947bf4636ebda6d4b8b3699913577d6a4f
 
 PODFILE CHECKSUM: 8e3ab452e5aaf7214ce3f69fcb15b6ee70f12117
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.6.0.beta.1
