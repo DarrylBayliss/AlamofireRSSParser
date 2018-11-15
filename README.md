@@ -37,6 +37,21 @@ import AlamofireRSSParser
 ``` 
  wherever you're using it.
  
+ ### Carthage
+ AlamofireRSSParser is available through [Carthage](https://github.com/Carthage/Carthage). To install
+ it, simply add the following line to your Cartfile:
+ 
+ ```ruby
+github "darrylbayliss/AlamofireRSSParser" "master"
+ ```
+ 
+ Then 
+ 
+ ```swift
+ import AlamofireRSSParser
+ ``` 
+ wherever you're using it.
+ 
 
 ### Manually
 Alternately you can add the contents of AlamofireRSSParser/Pod/Classes/ to your project and import the classes as appropriate.
