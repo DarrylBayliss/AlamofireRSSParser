@@ -80,6 +80,34 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
     var currentAttributes: [String: String]? = nil
     var parseError: NSError? = nil
     
+    private lazy var rfc822DateFormatter: DateFormatter = {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
+        return dateFormatter
+    }()
+    
+    private lazy var rfc822DateFormatter2: DateFormatter = {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
+        return dateFormatter
+    }()
+    
+    private lazy var publishedDateFormatter: DateFormatter = {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        return dateFormatter
+    }()
+    
+    private lazy var publishedDateFormatter2: DateFormatter = {
+        let dateFormatter: DateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssz"
+        return dateFormatter
+    }()
+    
     open var data: Data? = nil {
         didSet {
             if let data = data {
@@ -131,157 +159,12 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
     }
     
     open func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        //if we're at the item level
         if let currentItem = self.currentItem {
-            if ((elementName == "item") || (elementName == "entry")) {
-                self.feed?.items.append(currentItem)
-                return
-            }
-            
-            if (elementName == "title") {
-                currentItem.title = self.currentString
-            }
-            
-            if (elementName == "description") {
-                currentItem.itemDescription = self.currentString
-            }
-            
-            if ((elementName == "content:encoded") || (elementName == "content")) {
-                currentItem.content = self.currentString
-            }
-            
-            if (elementName == "link") {
-                currentItem.link = self.currentString
-            }
-            
-            if (elementName == "guid") {
-                currentItem.guid = self.currentString
-            }
-            
-            if (elementName == "author") {
-                currentItem.author = self.currentString
-            }
-            
-            if (elementName == "comments") {
-                currentItem.comments = self.currentString
-            }
-            
-            if (elementName == "source") {
-                currentItem.source = self.currentString
-            }
-            
-            if (elementName == "pubDate") {
-                if let date = RSSDateFormatter.rfc822DateFormatter().date(from: self.currentString) {
-                    currentItem.pubDate = date
-                } else if let date = RSSDateFormatter.rfc822DateFormatter2().date(from: self.currentString) {
-                    currentItem.pubDate = date
-                }
-            }
-            
-            if (elementName == "published") {
-                if let date = RSSDateFormatter.publishedDateFormatter().date(from: self.currentString) {
-                    currentItem.pubDate = date
-                } else if let date = RSSDateFormatter.publishedDateFormatter2().date(from: self.currentString) {
-                    currentItem.pubDate = date
-                }
-            }
-            
-            if (elementName == "media:thumbnail") {
-                if let attributes = self.currentAttributes {
-                    if let url = attributes["url"] {
-                        currentItem.mediaThumbnail = url
-                    }
-                }
-            }
-            
-            if (elementName == "media:content") {
-                if let attributes = self.currentAttributes {
-                    if let url = attributes["url"] {
-                        currentItem.mediaContent = url
-                    }
-                }
-            }
-            
-            if (elementName == "enclosure") {
-                if let attributes = self.currentAttributes {
-                    currentItem.enclosures = (currentItem.enclosures ?? []) + [attributes]
-                }
-            }
-            
-            if (elementName == "category") {
-                if let attributes = self.currentAttributes {
-                    currentItem.categories = (currentItem.categories ?? []) + [attributes]
-                }
-            }
-            
-            
-        //if we're at the top level
+            //if we're at the item level
+            parseItem(elementName, currentItem)
         } else {
-            if (elementName == "title") {
-                self.feed?.title = self.currentString
-            }
-            
-            if (elementName == "description") {
-                self.feed?.feedDescription = self.currentString
-            }
-            
-            if (elementName == "link") {
-                self.feed?.link = self.currentString
-            }
-            
-            if (elementName == "language") {
-                self.feed?.language = self.currentString
-            }
-            
-            if (elementName == "copyright") {
-                self.feed?.copyright = self.currentString
-            }
-            
-            if (elementName == "managingEditor") {
-                self.feed?.managingEditor = self.currentString
-            }
-            
-            if (elementName == "webMaster") {
-                self.feed?.webMaster = self.currentString
-            }
-            
-            if (elementName == "generator") {
-                self.feed?.generator = self.currentString
-            }
-            
-            if (elementName == "docs") {
-                self.feed?.docs = self.currentString
-            }
-            
-            if (elementName == "ttl") {
-                if let ttlInt = Int(currentString) {
-                    self.feed?.ttl = NSNumber(value: ttlInt)
-                }
-            }
-            
-            if (elementName == "pubDate") {
-                if let date = RSSDateFormatter.rfc822DateFormatter().date(from: self.currentString) {
-                    self.feed?.pubDate = date
-                } else if let date = RSSDateFormatter.rfc822DateFormatter2().date(from: self.currentString) {
-                    self.feed?.pubDate = date
-                }
-            }
-            
-            if (elementName == "published") {
-                if let date = RSSDateFormatter.publishedDateFormatter().date(from: self.currentString) {
-                    self.feed?.pubDate = date
-                } else if let date = RSSDateFormatter.publishedDateFormatter2().date(from: self.currentString) {
-                    self.feed?.pubDate = date
-                }
-            }
-            
-            if (elementName == "lastBuildDate") {
-                if let date = RSSDateFormatter.rfc822DateFormatter().date(from: self.currentString) {
-                    self.feed?.lastBuildDate = date
-                } else if let date = RSSDateFormatter.rfc822DateFormatter2().date(from: self.currentString) {
-                    self.feed?.lastBuildDate = date
-                }
-            }
+             //if we're at the top level
+            parseTopLevel(elementName)
         }
     }
     
@@ -293,37 +176,125 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
         self.parseError = parseError as NSError?
         self.parser?.abortParsing()
     }
+    
+    fileprivate func parseItem(_ elementName: String, _ currentItem: RSSItem) {
+        
+        switch elementName {
+        case "item", "entry":
+            self.feed?.items.append(currentItem)
+        case "title":
+            currentItem.title = self.currentString
+        case "description":
+            currentItem.itemDescription = self.currentString
+        case "image":
+            if let attributes = self.currentAttributes {
+                if let url = attributes["url"] {
+                    currentItem.image = url
+                }
+            }
+        case "content:encoded", "content":
+            currentItem.content = self.currentString
+        case "link":
+            currentItem.link = self.currentString
+        case "guid":
+            currentItem.guid = self.currentString
+        case "author":
+            currentItem.author = self.currentString
+        case "comments":
+            currentItem.comments = self.currentString
+        case "source":
+            currentItem.source = self.currentString
+        case "pubDate":
+            if let date = rfc822DateFormatter.date(from: self.currentString) {
+                currentItem.pubDate = date
+            } else if let date = rfc822DateFormatter2.date(from: self.currentString) {
+                currentItem.pubDate = date
+            }
+        case "published":
+            if let date = publishedDateFormatter.date(from: self.currentString) {
+                currentItem.pubDate = date
+            } else if let date = publishedDateFormatter2.date(from: self.currentString) {
+                currentItem.pubDate = date
+            }
+        case "media:thumbnail":
+            if let attributes = self.currentAttributes {
+                if let url = attributes["url"] {
+                    currentItem.mediaThumbnail = url
+                }
+            }
+        case "media:content":
+            if let attributes = self.currentAttributes {
+                if let url = attributes["url"] {
+                    currentItem.mediaContent = url
+                }
+            }
+        case "enclosure":
+            if let attributes = self.currentAttributes {
+                currentItem.enclosures = (currentItem.enclosures ?? []) + [attributes]
+            }
+        case "category":
+            if let attributes = self.currentAttributes {
+                currentItem.categories = (currentItem.categories ?? []) + [attributes]
+            }
+            
+        default:
+            // Do nothing.
+            break
+        }
+    }
+    
+    fileprivate func parseTopLevel(_ elementName: String) {
+        
+        switch elementName {
+            
+        case "title":
+            self.feed?.title = self.currentString
+        case "description":
+            self.feed?.feedDescription = self.currentString
+        case "link":
+            self.feed?.link = self.currentString
+        case "language":
+            self.feed?.language = self.currentString
+        case "copyright":
+            self.feed?.copyright = self.currentString
+        case "managingEditor":
+            self.feed?.managingEditor = self.currentString
+        case "webMaster":
+            self.feed?.webMaster = self.currentString
+        case "generator":
+            self.feed?.generator = self.currentString
+        case "docs":
+            self.feed?.docs = self.currentString
+        case "ttl":
+            if let ttlInt = Int(currentString) {
+                self.feed?.ttl = NSNumber(value: ttlInt)
+            }
+        case "pubDate":
+            if let date = rfc822DateFormatter.date(from: self.currentString) {
+                self.feed?.pubDate = date
+            } else if let date = rfc822DateFormatter2.date(from: self.currentString) {
+                self.feed?.pubDate = date
+            }
+        case "published":
+            if (elementName == "published") {
+                if let date = publishedDateFormatter.date(from: self.currentString) {
+                    self.feed?.pubDate = date
+                } else if let date = publishedDateFormatter2.date(from: self.currentString) {
+                    self.feed?.pubDate = date
+                }
+            }
+        case "lastBuildDate":
+            if (elementName == "lastBuildDate") {
+                if let date = rfc822DateFormatter.date(from: self.currentString) {
+                    self.feed?.lastBuildDate = date
+                } else if let date = rfc822DateFormatter2.date(from: self.currentString) {
+                    self.feed?.lastBuildDate = date
+                }
+            }
+        default:
+            // Do nothing.
+            break
+        }
+    }
 }
 
-/**
-    Struct containing various `NSDateFormatter` s
-*/
-struct RSSDateFormatter {
-    static func rfc822DateFormatter() -> DateFormatter {
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
-        return dateFormatter
-    }
-    
-    static func rfc822DateFormatter2() -> DateFormatter {
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
-        return dateFormatter
-    }
-    
-    static func publishedDateFormatter() -> DateFormatter {
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        return dateFormatter
-    }
-    
-    static func publishedDateFormatter2() -> DateFormatter {
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssz"
-        return dateFormatter
-    }
-}
