@@ -71,6 +71,7 @@ RSS 2.0 spec elements that it currently parses:
 - title
 - link
 - itemDescription
+- image
 - guid
 - author
 - comments
