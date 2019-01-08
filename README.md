@@ -105,6 +105,16 @@ Current elements:
 
 It also yanks all of the images that may be linked in the `itemDescription` (if it's HTML) and creates a nice array named `imagesFromDescription` that you can use for more image content.
 
+It also is in the beginning stages of parsing the atom.xml specification.
+
+Current elements:
+
+- title
+- link
+- updated
+- id
+- summary
+
 
 If you need more elements parsed please file an issue or even better, **please contribute**!  That's why this is on GitHub.
 

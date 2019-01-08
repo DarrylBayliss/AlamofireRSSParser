@@ -9,66 +9,13 @@
 import Foundation
 import Alamofire
 
-extension Alamofire.DataRequest {
-    /**
-        Creates a response serializer that returns an `RSSFeed` object initialized from the response data.
-     
-        - Returns: An RSS response serializer.
-     */
-    public static func RSSResponseSerializer() -> DataResponseSerializer<RSSFeed> {
-        return DataResponseSerializer { request, response, data, error in
-            guard error == nil else {
-                return .failure(error!)
-            }
-            
-            guard let validData = data else {
-                let failureReason = "Data could not be serialized. Input data was nil."
-                let error = NSError(domain: "com.alamofirerssparser", code: -6004, userInfo: [NSLocalizedFailureReasonErrorKey: failureReason])
-                return .failure(error)
-            }
-            
-            let parser = AlamofireRSSParser(data: validData)
-            
-            let parsedResults: (feed: RSSFeed?, error: NSError?) = parser.parse()
-            
-            if let feed = parsedResults.feed {
-                return .success(feed)
-            } else {
-                return .failure(parsedResults.error!)
-            }
-        }
-    }
-    
-    
-    /**
-        Adds a handler to be called once the request has finished.
-        
-        - Parameter completionHandler: A closure to be executed once the request has finished.
-    
-        - Returns: The request.
-    */
-    @discardableResult
-    public func responseRSS(_ completionHandler: @escaping (DataResponse<RSSFeed>) -> Void) -> Self {
-        return response(
-            responseSerializer: DataRequest.RSSResponseSerializer(),
-            completionHandler: completionHandler
-        )
-    }
-    
-    
-    //public func responseRSS(parser parser: AlamofireRSSParser?, completionHandler: Response<RSSFeed, NSError> -> Void) -> Self {
-    //  return response(responseSerializer: Request.RSSResponseSerializer(parser), completionHandler: completionHandler)
-    //}
-}
-
-
 /**
     This class does the bulk of the work.  Implements the `NSXMLParserDelegate` protocol.
     Unfortunately due to this it's also required to implement the `NSObject` protocol.
     
     And unfortunately due to that there doesn't seem to be any way to make this class have a valid public initializer,
     despite it being marked public.  I would love to have it be publicly accessible because I would like to able to pass
-    a custom-created instance of this class with configuration properties set into `responseRSS` (see the commented out overload above)
+    a custom-created instance of this class with configuration properties set into `responseRSS` (see the commented out overload in Alamofire+Extensions.swift)
 */
 open class AlamofireRSSParser: NSObject, XMLParserDelegate {
     var parser: XMLParser? = nil
@@ -184,7 +131,7 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
             self.feed?.items.append(currentItem)
         case "title":
             currentItem.title = self.currentString
-        case "description":
+        case "description", "summary type":
             currentItem.itemDescription = self.currentString
         case "image":
             if let attributes = self.currentAttributes {
@@ -194,9 +141,9 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
             }
         case "content:encoded", "content":
             currentItem.content = self.currentString
-        case "link":
+        case "link", "link href":
             currentItem.link = self.currentString
-        case "guid":
+        case "guid", "id":
             currentItem.guid = self.currentString
         case "author":
             currentItem.author = self.currentString
@@ -204,7 +151,7 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
             currentItem.comments = self.currentString
         case "source":
             currentItem.source = self.currentString
-        case "pubDate":
+        case "pubDate", "updated":
             if let date = rfc822DateFormatter.date(from: self.currentString) {
                 currentItem.pubDate = date
             } else if let date = rfc822DateFormatter2.date(from: self.currentString) {
