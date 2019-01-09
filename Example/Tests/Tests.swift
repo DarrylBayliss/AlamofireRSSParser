@@ -1,5 +1,6 @@
 import UIKit
 import XCTest
+import Alamofire
 import AlamofireRSSParser
 
 class Tests: XCTestCase {
@@ -14,16 +15,21 @@ class Tests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure() {
-            // Put the code you want to measure the time of here.
+    func testAtomFeed() {
+        
+        let expectation = XCTestExpectation(description: "Blah")
+        
+        let feedUrl = "https://www.xkcd.com/atom.xml"
+        
+        Alamofire.request(feedUrl).responseRSS { response in
+            
+            if response.result.isSuccess {
+                expectation.fulfill()
+            } else {
+                XCTFail()
+            }
         }
+        
+        wait(for: [expectation], timeout: 10)
     }
-    
 }

@@ -134,15 +134,17 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
         case "description", "summary type":
             currentItem.itemDescription = self.currentString
         case "image":
-            if let attributes = self.currentAttributes {
-                if let url = attributes["url"] {
+            if let attributes = self.currentAttributes, let url = attributes["url"] {
                     currentItem.image = url
-                }
             }
         case "content:encoded", "content":
             currentItem.content = self.currentString
-        case "link", "link href":
-            currentItem.link = self.currentString
+        case "link":
+            if let attributes = self.currentAttributes, let link = attributes["href"] {
+                currentItem.link = link
+            } else {
+                currentItem.link = self.currentString
+            }
         case "guid", "id":
             currentItem.guid = self.currentString
         case "author":
