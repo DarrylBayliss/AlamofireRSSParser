@@ -19,6 +19,7 @@ import Foundation
 open class RSSFeed: CustomStringConvertible {
     open var title: String? = nil
     open var link: String? = nil
+    open var image: URL? = nil
     open var feedDescription: String? = nil
     open var pubDate: Date? = nil
     open var lastBuildDate: Date? = nil

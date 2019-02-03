@@ -240,6 +240,8 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
                     self.feed?.lastBuildDate = date
                 }
             }
+        case "url":
+            self.feed?.image = URL(string: self.currentString)
         default:
             // Do nothing.
             break

@@ -24,6 +24,17 @@ class ViewController: UIViewController {
                 }
             }
         }
+        
+        let guardianUrl = "https://www.theguardian.com/uk/rss"
+        
+        Alamofire.request(guardianUrl).responseRSS() { (response) -> Void in
+            if let feed: RSSFeed = response.result.value {
+                //do something with your new RSSFeed object!
+                for item in feed.items {
+                    print(item)
+                }
+            }
+        }
     }
     
     
