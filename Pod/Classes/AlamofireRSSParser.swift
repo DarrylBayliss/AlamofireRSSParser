@@ -241,7 +241,9 @@ open class AlamofireRSSParser: NSObject, XMLParserDelegate {
                 }
             }
         case "url":
-            self.feed?.image = URL(string: self.currentString)
+            if let feedImage = URL(string: self.currentString) {
+                self.feed?.image = feedImage
+            }
         default:
             // Do nothing.
             break
