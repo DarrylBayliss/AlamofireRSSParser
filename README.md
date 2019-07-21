@@ -7,8 +7,8 @@
 
 ## Requirements
 - Xcode 10.0+
-- Swift 4.2+
-- Alamofire 4.7.3+
+- Swift 5.0+
+- Alamofire 4.8.2+
 
 #### Legacy Swift Support
 _If you need to support an earlier version of Swift, please either download the zip or point your Podfile at the coresponding tag:_
@@ -54,7 +54,7 @@ github "darrylbayliss/AlamofireRSSParser" "master"
  
 
 ### Manually
-Alternately you can add the contents of AlamofireRSSParser/Pod/Classes/ to your project and import the classes as appropriate.
+Alternately you can add the contents of AlamofireRSSParser/Sources to your project and import the classes as appropriate.
 
 ## Usage
 
