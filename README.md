@@ -1,10 +1,5 @@
 # AlamofireRSSParser
 
-[![CI Status](http://img.shields.io/travis/AdeptusAstartes/AlamofireRSSParser.svg?style=flat)](https://travis-ci.org/AdeptusAstartes/AlamofireRSSParser)
-[![Version](https://img.shields.io/cocoapods/v/AlamofireRSSParser.svg?style=flat)](http://cocoapods.org/pods/AlamofireRSSParser)
-[![License](https://img.shields.io/cocoapods/l/AlamofireRSSParser.svg?style=flat)](http://cocoapods.org/pods/AlamofireRSSParser)
-[![Platform](https://img.shields.io/cocoapods/p/AlamofireRSSParser.svg?style=flat)](http://cocoapods.org/pods/AlamofireRSSParser)
-
 ## Requirements
 - Xcode 10.0+
 - Swift 5.0+
@@ -119,9 +114,11 @@ Current elements:
 If you need more elements parsed please file an issue or even better, **please contribute**!  That's why this is on GitHub.
 
 
-## Author
+## Authors
 
-Don Angelillo, dangelillo@gmail.com
+Don Angelillo, dangelillo@gmail.com (Original author)
+
+Darryl Bayliss, darrylbayliss@dazindustries.co.uk (Extensive tweaks)
 
 Inspired by Thibaut LE LEVIER's awesome orginal [Block RSSParser](https://github.com/tibo/BlockRSSParser) AFNetworking Plugin. 
 

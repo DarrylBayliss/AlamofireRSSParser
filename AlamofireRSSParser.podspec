@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.author           = { "Don Angelillo" => "dangelillo@gmail.com" }
   s.source           = { :git => "https://github.com/DarrylBayliss/AlamofireRSSParser.git", :tag => s.version.to_s }
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.requires_arc = true
 
   s.swift_version = '5.0'
